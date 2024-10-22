@@ -1,0 +1,620 @@
+#include <iostream>
+#include <limits>
+#include <cmath>
+using namespace std;
+
+struct anime {
+    string nama_anime;
+    int jumlah_episode;
+    string tipe_anime;
+    string genre_anime;
+    string studio_anime;
+    string sinopsis_anime;
+};
+
+struct Node {
+    anime data;
+    Node* next;
+    Node* prev;
+};
+
+struct StackNode {
+    Node* animeNode;
+    StackNode* next;
+};
+
+struct QueueNode {
+    Node* animeNode;
+    QueueNode* next;
+};
+
+class Stack {
+private:
+    StackNode* top;
+
+public:
+    Stack() : top(nullptr) {}
+    void push(Node* animeNode) {
+        StackNode* newNode = new StackNode{ animeNode, top };
+        top = newNode;
+    }
+    Node* pop() {
+        if (top == nullptr) return nullptr;
+        StackNode* temp = top;
+        Node* animeNode = top->animeNode;
+        top = top->next;
+        delete temp;
+        return animeNode;
+    }
+    bool isEmpty() {
+        return top == nullptr;
+    }
+};
+
+// Queue class
+class Queue {
+private:
+    QueueNode* front;
+    QueueNode* rear;
+
+public:
+    Queue() : front(nullptr), rear(nullptr) {}
+
+    void enqueue(Node* animeNode) {
+        QueueNode* newNode = new QueueNode{ animeNode, nullptr };
+        if (rear == nullptr) {
+            front = rear = newNode;
+        } else {
+            rear->next = newNode;
+            rear = newNode;
+        }
+    }
+    Node* dequeue() {
+        if (front == nullptr) return nullptr;
+        QueueNode* temp = front;
+        Node* animeNode = front->animeNode;
+        front = front->next;
+        if (front == nullptr) rear = nullptr;
+        delete temp;
+        return animeNode;
+    }
+    bool isEmpty() {
+        return front == nullptr;
+    }
+};
+
+Node* buatNode(anime data) {
+    Node* nodeBaru = new Node;
+    nodeBaru->data = data;
+    nodeBaru->next = nullptr;
+    nodeBaru->prev = nullptr;
+    return nodeBaru;
+}
+
+void menambahkan(Node*& head, Node*& tail) {
+    anime animeBaru;
+
+    cout << "\nMasukkan anime baru: ";
+    cin.ignore();
+    getline(cin, animeBaru.nama_anime);
+    
+    do {
+        cout << "Masukkan jumlah episode: ";
+        if (cin >> animeBaru.jumlah_episode) {
+            break;
+        } else {
+            cout << "Inputan tidak valid, silahkan masukkan angka" << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    } while (true);
+    
+    cin.ignore();
+    cout << "TV/ONA/OVA/MOVIE/SPECIAL" << endl;
+    cout << "Pilih tipe anime: ";
+    cin >> animeBaru.tipe_anime;
+    
+    cout << "Action/Comedy/Romance/Fantasy/Adventure" << endl;
+    cout << "Pilih genre anime: ";
+    cin.ignore();
+    getline(cin, animeBaru.genre_anime);
+    
+    cout << "Toei Animation/MAPPA/SILVER LINK/Kyoto Animation/Aniplex/Ufotable/Madhouse/Bones" << endl;
+    cout << "Pilih studio anime: ";
+    getline(cin, animeBaru.studio_anime);
+    
+    cout << "Masukkan sinopsis anime: ";
+    getline(cin, animeBaru.sinopsis_anime);
+
+    Node* nodeBaru = buatNode(animeBaru);
+    
+    if (head == nullptr) {
+        head = nodeBaru;
+        tail = nodeBaru;
+    } else {
+        tail->next = nodeBaru;
+        nodeBaru->prev = tail;
+        tail = nodeBaru;
+    }
+    cout << "Data berhasil ditambahkan\n" << endl;
+}
+
+void melihat(Node* head) {
+    if (head == nullptr) {
+        cout << "Data tidak ada!\n" << endl;
+        return;
+    }
+    Node* newnode = head;  
+    int index = 1;
+    while (newnode != nullptr) {
+        cout << "\n" << endl;
+        cout << index << ". Nama anime: " << newnode->data.nama_anime << endl;
+        cout << "Jumlah Episode: " << newnode->data.jumlah_episode << endl;
+        cout << "Tipe anime: " << newnode->data.tipe_anime << endl;
+        cout << "Genre anime: " << newnode->data.genre_anime << endl;
+        cout << "Studio anime: " << newnode->data.studio_anime << endl;
+        cout << "Sinopsis anime: " << newnode->data.sinopsis_anime << endl;
+        newnode = newnode->next;
+        index++;
+    }
+    cout << "\n" << endl;
+}
+
+void merubah(Node* head, int indeks) {
+    if (head == nullptr) {
+        cout << "Data tidak ada!\n" << endl;
+        return;
+    }
+    Node* newnode = head;  
+    int index = 1;
+    while (newnode != nullptr && index < indeks) {
+        newnode = newnode->next;
+        index++;
+    }
+    if (newnode == nullptr) {
+        cout << "Indeks tidak valid." << endl;
+        return;
+    }
+    int pilih_yang_ingin_diubah;
+    do {
+        cout << "\n1. Nama anime" << endl;
+        cout << "2. Jumlah episode" << endl;
+        cout << "3. Tipe anime" << endl;
+        cout << "4. Genre anime" << endl;
+        cout << "5. Studio anime" << endl;
+        cout << "6. Sinopsis anime" << endl;
+        cout << "7. Keluar" << endl;
+        cout << "Pilih yang ingin diubah: ";
+        cin >> pilih_yang_ingin_diubah;
+
+        switch (pilih_yang_ingin_diubah) {
+            case 1:
+                cout << "Masukkan nama anime baru: ";
+                cin.ignore();
+                getline(cin, newnode->data.nama_anime);  
+                break;
+            case 2:
+                cout << "Masukkan jumlah episode baru: ";
+                while (!(cin >> newnode->data.jumlah_episode)) {
+                    cout << "Input tidak valid, silakan masukkan angka." << endl;
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+                break;
+            case 3:
+                cout << "Masukkan tipe baru: ";
+                cin >> newnode->data.tipe_anime;
+                break;
+            case 4:
+                cout << "Masukkan genre baru: ";
+                cin.ignore();
+                getline(cin, newnode->data.genre_anime);
+                break;
+            case 5:
+                cout << "Masukkan studio baru: ";
+                getline(cin, newnode->data.studio_anime);
+                break;
+            case 6:
+                cout << "Masukkan sinopsis baru: ";
+                getline(cin, newnode->data.sinopsis_anime);
+                break;
+            case 7:
+                return;
+            default:
+                cout << "Pilihan tidak valid." << endl;
+        }
+    } while (pilih_yang_ingin_diubah != 7);
+    cout << "Data berhasil diubah.\n" << endl;
+}
+
+void menghapus(Node*& head, Node*& tail, int indeks) {
+    if (head == nullptr) {
+        cout << "Data tidak ada!\n" << endl;
+        return;
+    }
+    Node* newnode = head;  
+    int index = 1;
+    while (newnode != nullptr && index < indeks) {
+        newnode = newnode->next;
+        index++;
+    }  
+    if (newnode == nullptr) {
+        cout << "Indeks tidak valid." << endl;
+        return;
+    }
+    if (newnode->prev != nullptr) {
+        newnode->prev->next = newnode->next;
+    } else {
+        head = newnode->next;
+    }
+    if (newnode->next != nullptr) {
+        newnode->next->prev = newnode->prev;
+    } else {
+        tail = newnode->prev;
+    }
+    delete newnode;  
+    cout << "Data berhasil dihapus.\n" << endl;
+}
+
+// Shell Sort (Ascending)
+void shellSort(Node* head) {
+    if (!head) return;
+    int n = 0;
+    Node* temp = head;
+    while (temp) {
+        n++;
+        temp = temp->next;
+    }
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < n; i++) {
+            Node* j = head;
+            for (int k = 0; k < i; k++) {
+                j = j->next;
+            }
+            anime tempData = j->data;
+            int jIndex = i;
+
+            while (jIndex >= gap) {
+                Node* k = head;
+                for (int m = 0; m < jIndex - gap; m++) {
+                    k = k->next;
+                }
+                if (k->data.nama_anime > tempData.nama_anime) {
+                    j->data = k->data;
+                } else {
+                    break;
+                }
+                jIndex -= gap;
+            }
+            Node* k = head;
+            for (int m = 0; m < jIndex; m++) {
+                k = k->next;
+            }
+            k->data = tempData;
+        }
+    }
+    cout << "Data berhasil diurutkan dengan Shell Sort (Ascending).\n" << endl;
+}
+
+// Quick Sort (Descending)
+Node* partition(Node* low, Node* high) {
+    anime pivot = high->data;
+    Node* i = low->prev;
+
+    for (Node* j = low; j != high; j = j->next) {
+        if (j->data.nama_anime > pivot.nama_anime) {
+            i = (i == nullptr) ? low : i->next;
+            swap(i->data, j->data);
+        }
+    }
+    i = (i == nullptr) ? low : i->next;
+    swap(i->data, high->data);
+    return i;
+}
+
+void quickSort(Node* low, Node* high) {
+    if (high != nullptr && low != high && low != high->next) {
+        Node* pivot = partition(low, high);
+        quickSort(low, pivot->prev);
+        quickSort(pivot->next, high);
+    }
+}
+
+void sortAnime(Node* head) {
+    if (!head) return;
+    Node* temp = head;
+    while (temp->next) {
+        temp = temp->next;
+    }
+    quickSort(head, temp);
+    cout << "Data berhasil diurutkan dengan Quick Sort (Descending).\n" << endl;
+}
+
+int fibonacciSearch(Node* head, int x) {
+    int fib2 = 0;
+    int fib1 = 1; 
+    int fibM = fib2 + fib1; 
+
+    Node* current = head;
+    while (fibM < x) {
+        fib2 = fib1;
+        fib1 = fibM;
+        fibM = fib2 + fib1;
+    }
+    
+    int offset = -1;
+
+    while (fibM > 1) {
+        int i = min(offset + fib2, x - 1);
+        current = head;
+        for (int j = 0; j < i && current != nullptr; j++) {
+            current = current->next;
+        }
+        if (current != nullptr && current->data.jumlah_episode < x) {
+            fibM = fib1;
+            fib1 = fib2;
+            fib2 = fibM - fib1;
+            offset = i;
+        } else if (current != nullptr && current->data.jumlah_episode > x) {
+            fibM = fib2;
+            fib1 = fib1 - fib2;
+            fib2 = fibM - fib1;
+        } else {
+            cout << "Ditemukan: " << current->data.nama_anime << endl;
+            cout << "Jumlah Episode: " << current->data.jumlah_episode << endl;
+            cout << "Tipe Anime: " << current->data.tipe_anime << endl;
+            cout << "Genre Anime: " << current->data.genre_anime << endl;
+            cout << "Studio Anime: " << current->data.studio_anime << endl;
+            cout << "Sinopsis Anime: " << current->data.sinopsis_anime << endl;
+            return i; 
+        }
+    }
+
+    if (current != nullptr && current->data.jumlah_episode == x) {
+        cout << "Ditemukan: " << current->data.nama_anime << endl;
+        cout << "Jumlah Episode: " << current->data.jumlah_episode << endl;
+        cout << "Tipe Anime: " << current->data.tipe_anime << endl;
+        cout << "Genre Anime: " << current->data.genre_anime << endl;
+        cout << "Studio Anime: " << current->data.studio_anime << endl;
+        cout << "Sinopsis Anime: " << current->data.sinopsis_anime << endl;
+        return offset + 1; 
+    }
+    return -1; 
+}
+
+int jumpSearch(Node* head, int x) {
+    int n = 0;
+    Node* current = head;
+
+    while (current != nullptr) {
+        n++;
+        current = current->next;
+    }
+
+    int jump = sqrt(n);
+    int prev = 0;
+    current = head;
+    while (current->next != nullptr && current->data.jumlah_episode < x) {
+        prev = current->data.jumlah_episode;
+        for (int i = 0; i < jump && current != nullptr; i++) {
+            current = current->next;
+        }
+        if (current == nullptr) return -1;
+    }
+
+    while (current != nullptr && prev < x) {
+        if (current->data.jumlah_episode == x) return current->data.jumlah_episode;
+            cout << "Anime ditemukan:\n";
+        prev++;
+    }
+    return -1;
+}
+
+void preBadChar(string str, int badChar[256]) {
+    for (int i = 0; i < 256; i++) {
+        badChar[i] = -1;
+    }
+    for (int i = 0; i < str.length(); i++) {
+        badChar[(int)str[i]] = i;
+    }
+}
+
+void boyerMoore(Node* head, string pattern) {
+    int badChar[256];
+    preBadChar(pattern, badChar);
+    Node* current = head;
+    while (current != nullptr) {
+        string text = current->data.nama_anime;
+        int m = pattern.length();
+        int n = text.length();
+        
+        int s = 0; // s is the shift of the pattern with respect to text
+        while (s <= n - m) {
+            int j = m - 1;
+
+            while (j >= 0 && pattern[j] == text[s + j]) {
+                j--;
+            }
+            if (j < 0) {
+                cout << "Ditemukan: " << text << endl;
+                cout << "Jumlah Episode: " << current->data.jumlah_episode << endl;
+                cout << "Tipe Anime: " << current->data.tipe_anime << endl;
+                cout << "Genre Anime: " << current->data.genre_anime << endl;
+                cout << "Studio Anime: " << current->data.studio_anime << endl;
+                cout << "Sinopsis Anime: " << current->data.sinopsis_anime << endl;
+            }
+            s += (s + m < n) ? m - badChar[(int)text[s + m]] : 1;
+        }
+        current = current->next;
+    }
+}
+
+void searchAnime(Node* head) {
+    int searchChoice;
+    cout << "Pilih metode pencarian:\n";
+    cout << "1. Fibonacci Search (jumlah episode)\n";
+    cout << "2. Jump Search (jumlah episode)\n";
+    cout << "3. Boyer-Moore (nama anime)\n";
+    cout << "Pilihan: ";
+    cin >> searchChoice;
+    switch (searchChoice) {
+        case 1: {
+            int x;
+            cout << "Masukkan jumlah episode yang dicari: ";
+            cin >> x;
+            int index = fibonacciSearch(head, x);
+            if (index != -1) {
+                cout << "Data ditemukan pada indeks: " << index << endl;
+                // Add additional display logic here if needed
+            } else {
+                cout << "Data tidak ditemukan." << endl;
+            }
+            break;
+        }
+        case 2: {
+            int x;
+            cout << "Masukkan jumlah episode yang dicari: ";
+            cin >> x;
+            int index = jumpSearch(head, x);
+            if (index != -1) {
+                cout << "Anime ditemukan pada indeks: " << index << endl;
+            } else {
+                cout << "Data tidak ditemukan." << endl;
+            }
+            break;
+        }
+        case 3: {
+            string pattern;
+            cout << "Masukkan nama anime yang dicari: ";
+            cin.ignore();
+            getline(cin, pattern);
+            boyerMoore(head, pattern);
+            break;
+        }
+        default:
+            cout << "Pilihan tidak valid." << endl;
+    }
+}
+
+int main() {
+    Node* head = nullptr;
+    Node* tail = nullptr;
+    Stack animeStack;
+    Queue animeQueue;
+    int pilihan;
+    do {
+        cout << "== Menu utama ===" << endl;
+        cout << "1. Menambahkan Anime" << endl;
+        cout << "2. Melihat Data Anime" << endl;
+        cout << "3. Mengubah Data Anime" << endl;
+        cout << "4. Menghapus Data Anime" << endl;
+        cout << "5. Tambah ke Stack" << endl;
+        cout << "6. Tambah ke Queue" << endl;
+        cout << "7. Ambil dari Stack" << endl;
+        cout << "8. Ambil dari Queue" << endl;
+        cout << "9. Sort" << endl;
+        cout << "10. Search" << endl;
+        cout << "11. Program Berhenti" << endl;
+        cout << "Silahkan pilih: ";
+        cin >> pilihan;
+        switch (pilihan) {
+            case 1:
+                menambahkan(head, tail);
+                break;
+            case 2:
+                melihat(head);
+                break;
+            case 3: {
+                int indeksUbah;
+                cout << "Masukkan indeks data yang ingin diubah: ";
+                cin >> indeksUbah;
+                merubah(head, indeksUbah);
+                break;
+            }
+            case 4: {
+                int indeksHapus;
+                cout << "Masukkan indeks data yang ingin dihapus: ";
+                cin >> indeksHapus;
+                menghapus(head, tail, indeksHapus);
+                break;
+            }
+            case 5: {
+                int index;
+                cout << "Masukkan indeks anime yang ingin ditambahkan ke stack: ";
+                cin >> index;
+                Node* temp = head;
+                for (int i = 1; i < index && temp != nullptr; i++) {
+                    temp = temp->next;
+                }
+                if (temp) {
+                    animeStack.push(temp);
+                    cout << "Anime berhasil ditambahkan ke stack!" << endl;
+                } else {
+                    cout << "Indeks tidak valid." << endl;
+                }
+                break;
+            }
+            case 6: {
+                int index;
+                cout << "Masukkan indeks anime yang ingin ditambahkan ke queue: ";
+                cin >> index;
+                Node* temp = head;
+                for (int i = 1; i < index && temp != nullptr; i++) {
+                    temp = temp->next;
+                }
+                if (temp) {
+                    animeQueue.enqueue(temp);
+                    cout << "Anime berhasil ditambahkan ke queue!" << endl;
+                } else {
+                    cout << "Indeks tidak valid." << endl;
+                }
+                break;
+            }
+            case 7: {
+                Node* animeNode = animeStack.pop();
+                if (animeNode) {
+                    cout << "Anime diambil dari stack: " << animeNode->data.nama_anime << endl;
+                } else {
+                    cout << "Stack kosong!" << endl;
+                }
+                break;
+            }
+            case 8: {
+                Node* animeNode = animeQueue.dequeue();
+                if (animeNode) {
+                    cout << "Anime diambil dari queue: " << animeNode->data.nama_anime << endl;
+                } else {
+                    cout << "Queue kosong!" << endl;
+                }
+                break;
+            }
+            case 9: {
+                int pilih_sort;
+                cout << "== Menu Sort == " << endl;
+                cout << "1. Shell Sort (Ascending)" << endl;
+                cout << "2. Quick Sort (Descending)" << endl;
+                cout << "Pilih sort: ";
+                cin >> pilih_sort;
+                switch (pilih_sort) {
+                    case 1:
+                        shellSort(head);
+                        break;
+                    case 2:
+                        sortAnime(head);
+                        break;
+                    default:
+                        cout << "Input tidak valid." << endl;
+                }
+                break;
+            }
+            case 10:
+                searchAnime(head); 
+                break;
+            case 11:
+                break;
+            default:
+                cout << "Input tidak valid.\n" << endl;
+        }
+    } while (pilihan != 11);
+    return 0;
+}
